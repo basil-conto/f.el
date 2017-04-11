@@ -60,12 +60,8 @@ If PATH is not allowed to be modified, throw error."
 
 (defun f-join (&rest args)
   "Join ARGS to a single path."
-  (let (path (relative (f-relative? (car args))))
-    (-map
-     (lambda (arg)
-       (setq path (f-expand arg path)))
-     args)
-    (if relative (f-relative path) path)))
+  (funcall (if (f-relative? (car args)) #'f-relative #'identity)
+           (--reduce-from (f-expand it acc) nil args)))
 
 (defun f-split (path)
   "Split PATH and return list containing parts."
